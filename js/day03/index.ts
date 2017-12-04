@@ -1,6 +1,6 @@
 const target = parseInt(process.argv[2])
 
-function findClosestSquare (target, lastBase = 1) {
+function findClosestSquare (target: number, lastBase = 1): {base: number, square: number} {
   const square = lastBase * lastBase
   if (square >= target) {
     return {base: lastBase, square}
@@ -9,7 +9,7 @@ function findClosestSquare (target, lastBase = 1) {
   }
 }
 
-function findCoordinate (target, startCoord, square, base) {
+function findCoordinate (target: number, startCoord: Array<number>, square: number, base: number) {
   const period = base - 1
   let value = square
   let coord = startCoord
