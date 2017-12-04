@@ -13,11 +13,11 @@ class Word {
     return this.text
   }
 
-  isEqualTo(otherWord: Word) {
+  isEqualTo(otherWord: Word): boolean {
     return this.text === otherWord.getText()
   }
 
-  isAnagramOf(otherWord: Word) {
+  isAnagramOf(otherWord: Word): boolean {
     const thisSortedText = this.text.split('').sort().join()
     const otherSortedText = otherWord.getText().split('').sort().join()
 
@@ -57,9 +57,9 @@ class Line {
 }
 
 const inputFile: string = process.argv[2]
-const input = fs.readFileSync(inputFile, {encoding: 'utf8'})
+const input: string = fs.readFileSync(inputFile, {encoding: 'utf8'})
 
-const lines = input.split(/\r?\n/)
+const lines: Array<Line> = input.split(/\r?\n/)
   .filter(text => !!text.trim())
   .map(text => new Line(text))
 
