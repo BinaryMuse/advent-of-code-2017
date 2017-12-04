@@ -1,0 +1,11 @@
+{
+  "name": "binarymuse-advent-of-code-2017",
+  "version": "1.0.0",
+  "description": "Advent of Code 2017 solutions in JS/TS",
+  "author": "Michelle Tilley <michelle@michelletilley.net>",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^8.0.54"
+  },
+  "private": true
+}
