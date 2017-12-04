@@ -27,16 +27,9 @@ class Word {
 
 class Line {
   private words: Array<Word>
-  private counts: Map<string, number>
 
   constructor(text: string) {
     this.words = text.split(/\W+/).map(t => new Word(t))
-    this.counts = new Map()
-
-    this.words.forEach(word => {
-      const count = this.counts.get(word.getText()) || 0
-      this.counts.set(word.getText(), count + 1)
-    })
   }
 
   compareAllWords(predicate: WordComparePredicate): boolean {
