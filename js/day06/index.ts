@@ -3,6 +3,7 @@ import * as fs from 'fs'
 class MemoryAllocator {
   private banks: number[]
   private visited: Set<string> = new Set<string>()
+  private history: string[] = []
   private steps: number = 0
 
   constructor(banks: number[]) {
@@ -10,7 +11,7 @@ class MemoryAllocator {
   }
 
   public balance(): void {
-    this.visited.add(this.getHash())
+    this.addToHistory()
     const maxBankSize = Math.max(...this.banks)
     const bankIndex = this.banks.findIndex(val => val === maxBankSize)
     this.banks[bankIndex] = 0
@@ -26,6 +27,12 @@ class MemoryAllocator {
     }
   }
 
+  private addToHistory() {
+    const hash = this.getHash()
+    this.visited.add(hash)
+    this.history.push(hash)
+  }
+
   public getHash(): string {
     return this.banks.join(',')
   }
@@ -36,6 +43,12 @@ class MemoryAllocator {
 
   public getSteps(): number {
     return this.steps
+  }
+
+  public getStepsAtFirst(hash: string): number {
+    const firstSaw = this.history.indexOf(hash)
+    const diff = this.steps - firstSaw
+    return diff
   }
 }
 
@@ -48,3 +61,4 @@ while (!allocator.hasVisited(allocator.getHash())) {
   allocator.balance()
 }
 console.log(`Steps: ${allocator.getSteps()}`)
+console.log(`Loop size: ${allocator.getStepsAtFirst(allocator.getHash())}`)
