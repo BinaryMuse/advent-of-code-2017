@@ -4,6 +4,7 @@ use std::str::FromStr;
 mod common;
 mod day01;
 mod day02;
+mod day03;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -19,6 +20,7 @@ fn main() {
     let runner = match day {
         1 => day01::run,
         2 => day02::run,
+        3 => day03::run,
         _ => {
             println!("Couldn't find implementation for day {}", day);
             std::process::exit(1);
