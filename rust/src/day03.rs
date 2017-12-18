@@ -78,10 +78,10 @@ impl UlamIterDirection {
     fn preferred_next_direction(&self) -> UlamIterDirection {
         use self::UlamIterDirection::*;
         match self {
-            &UP        => LEFT,
-            &LEFT      => DOWN,
-            &DOWN      => RIGHT,
-            &RIGHT     => UP
+            &UP    => LEFT,
+            &LEFT  => DOWN,
+            &DOWN  => RIGHT,
+            &RIGHT => UP
         }
     }
 
@@ -89,10 +89,10 @@ impl UlamIterDirection {
     fn delta(&self) -> (i32, i32) {
         use self::UlamIterDirection::*;
         match self {
-            &UP        => ( 0,  1),
-            &DOWN      => ( 0, -1),
-            &LEFT      => (-1,  0),
-            &RIGHT     => ( 1,  0)
+            &UP    => ( 0,  1),
+            &DOWN  => ( 0, -1),
+            &LEFT  => (-1,  0),
+            &RIGHT => ( 1,  0)
         }
 
     }
