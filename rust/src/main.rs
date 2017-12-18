@@ -2,6 +2,7 @@ use std::io::Write;
 use std::str::FromStr;
 
 mod common;
+mod day01;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -15,6 +16,7 @@ fn main() {
 
     let remaining = &args[2..];
     let runner = match day {
+        1 => day01::run,
         _ => {
             println!("Couldn't find implementation for day {}", day);
             std::process::exit(1);
