@@ -194,11 +194,11 @@ fn test_grid_neighbors_values() {
     g.set(( 0, -1), 8);
     g.set(( 1, -1), 9);
 
-    let total = g.neighbors_values((0, 0))
+    let total: u32 = g.neighbors_values((0, 0))
         .iter()
         .map(|opt| opt.unwrap())
-        .fold(0, |acc, val| acc + val);
-    assert_eq!(total, 1 +2 + 3 + 4 + 6 + 7 + 8 + 9);
+        .sum();
+    assert_eq!(total, 1 + 2 + 3 + 4 + 6 + 7 + 8 + 9);
 }
 
 #[test]
@@ -265,7 +265,7 @@ fn part2(check: u64) -> u64 {
             // ... find all the values of the neighbors ...
             let values = g.neighbors_values(cell);
             // ... and sum the ones that exist (the ones that don't default to 0)
-            values.iter().map(|opt| opt.unwrap_or(&0)).fold(0, |acc, val| acc + val)
+            values.iter().map(|opt| opt.unwrap_or(&0)).sum()
         };
         // Set the sum for the current cell
         g.set(cell, sum);
