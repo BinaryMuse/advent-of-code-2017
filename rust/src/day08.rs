@@ -188,6 +188,7 @@ impl<T: Num + Default + Copy + PartialOrd> Machine<T> {
         }
     }
 
+    #[cfg(test)]
     fn register_value(&self, register: &str) -> Option<&T> {
         self.registers.get(register)
     }
