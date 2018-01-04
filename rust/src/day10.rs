@@ -1,13 +1,29 @@
 use common;
 use std::str::FromStr;
 
-struct KnotHasher {
+pub struct KnotHasher {
     vec: Vec<u8>,
     pos: usize,
     skip: usize,
 }
 
 impl KnotHasher {
+    pub fn hash(input: &str) -> String {
+        let mut lens: Vec<u8> = input.trim().as_bytes().into();
+        lens.extend([17u8, 31u8, 73u8, 47u8, 23u8].iter());
+
+        let mut hasher = KnotHasher::new(gen_list());
+        for _ in 0..64 {
+            hasher.run(&lens);
+        }
+        let sparse = hasher.to_slice();
+        let dense: Vec<String> = sparse.chunks(16).map(|slice| {
+            let byte = slice[1..].iter().fold(slice[0], |acc, n| acc ^ n);
+            format!("{:02x}", byte)
+        }).collect();
+        dense.join("")
+    }
+
     fn new(vec: Vec<u8>) -> Self {
         KnotHasher { vec, pos: 0, skip: 0 }
     }
@@ -56,24 +72,8 @@ pub fn run(_args: &[String]) {
 
     {
         // Part 2
-        println!("Part 2: {}", knot_hash(&input));
+        println!("Part 2: {}", KnotHasher::hash(&input));
     }
-}
-
-fn knot_hash(input: &str) -> String {
-    let mut lens: Vec<u8> = input.trim().as_bytes().into();
-    lens.extend([17u8, 31u8, 73u8, 47u8, 23u8].iter());
-
-    let mut hasher = KnotHasher::new(gen_list());
-    for _ in 0..64 {
-        hasher.run(&lens);
-    }
-    let sparse = hasher.to_slice();
-    let dense: Vec<String> = sparse.chunks(16).map(|slice| {
-        let byte = slice[1..].iter().fold(slice[0], |acc, n| acc ^ n);
-        format!("{:02x}", byte)
-    }).collect();
-    dense.join("")
 }
 
 fn gen_list() -> Vec<u8> {
@@ -94,8 +94,8 @@ fn test_hasher() {
 
 #[test]
 fn test_knot_hash() {
-    assert_eq!(knot_hash(""), "a2582a3a0e66e6e86e3812dcb672a272");
-    assert_eq!(knot_hash("AoC 2017"), "33efeb34ea91902bb2f59c9920caa6cd");
-    assert_eq!(knot_hash("1,2,3"), "3efbe78a8d82f29979031a4aa0b16a9d");
-    assert_eq!(knot_hash("1,2,4"), "63960835bcdc130f0b66d7ff4f6a5a8e");
+    assert_eq!(KnotHasher::hash(""), "a2582a3a0e66e6e86e3812dcb672a272");
+    assert_eq!(KnotHasher::hash("AoC 2017"), "33efeb34ea91902bb2f59c9920caa6cd");
+    assert_eq!(KnotHasher::hash("1,2,3"), "3efbe78a8d82f29979031a4aa0b16a9d");
+    assert_eq!(KnotHasher::hash("1,2,4"), "63960835bcdc130f0b66d7ff4f6a5a8e");
 }
