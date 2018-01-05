@@ -6,7 +6,20 @@ pub fn run(_args: &[String]) {
     let mut programs: Vec<char> = "abcdefghijklmnop".chars().collect();
     let moves: Vec<&str> = input.trim().split(",").collect();
     dance(&mut programs, &moves);
-    println!("Part 1: order is {}", programs.into_iter().collect::<String>());
+    println!("Part 1: order is {}", programs.iter().collect::<String>());
+    let mut loop_size = 0;
+    for i in 1..1_000_000_000 {
+        dance(&mut programs, &moves);
+        if programs.iter().collect::<String>() == "abcdefghijklmnop" {
+            loop_size = i + 1;
+            break;
+        }
+    }
+    let remainder = 1_000_000_000 % loop_size;
+    for _ in 0..remainder {
+        dance(&mut programs, &moves);
+    }
+    println!("Part 2: order is {} with a loop size of {}", programs.iter().collect::<String>(), loop_size);
 }
 
 #[derive(Debug)]
