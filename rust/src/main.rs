@@ -12,6 +12,8 @@ mod day11;
 mod day12;
 mod day13;
 mod day14;
+mod day15;
+mod day16;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -35,6 +37,8 @@ fn main() {
         12 => day12::run,
         13 => day13::run,
         14 => day14::run,
+        15 => day15::run,
+        16 => day16::run,
         _  => {
             println!("Couldn't find implementation for day {}", day);
             std::process::exit(1);
