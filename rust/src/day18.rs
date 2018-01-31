@@ -248,45 +248,45 @@ impl<'a> Program<'a> {
             return
         }
 
-        let instr = self.instructions.get(self.pointer as usize).map(|val| val.clone());
+        let instr = self.instructions.get(self.pointer as usize);
 
         use self::Instruction::*;
         match instr.clone() {
-            Some(Snd(ref val)) => {
+            Some(&Snd(ref val)) => {
                 let value = self.machine.resolve_value(val);
                 self.send_value(other_prog, value);
                 self.pointer += 1;
             },
-            Some(Set(ref reg, ref val)) => {
+            Some(&Set(ref reg, ref val)) => {
                 let value = self.machine.resolve_value(val);
                 self.machine.set_register(reg, value);
                 self.pointer += 1;
             },
-            Some(Add(ref reg, ref val)) => {
+            Some(&Add(ref reg, ref val)) => {
                 let current = self.machine.get_register(reg);
                 let new = current + self.machine.resolve_value(val);
                 self.machine.set_register(reg, new);
                 self.pointer += 1;
             },
-            Some(Mul(ref reg, ref val)) => {
+            Some(&Mul(ref reg, ref val)) => {
                 let current = self.machine.get_register(reg);
                 let new = current * self.machine.resolve_value(val);
                 self.machine.set_register(reg, new);
                 self.pointer += 1;
             },
-            Some(Mod(ref reg, ref val)) => {
+            Some(&Mod(ref reg, ref val)) => {
                 let current = self.machine.get_register(reg);
                 let new = current % self.machine.resolve_value(val);
                 self.machine.set_register(reg, new);
                 self.pointer += 1;
             },
-            Some(Rcv(ref reg)) => {
+            Some(&Rcv(ref reg)) => {
                 if let Some(value) = self.receive_value() {
                     self.machine.set_register(reg, value);
                     self.pointer += 1;
                 }
             },
-            Some(Jmp(ref reg, ref val)) => {
+            Some(&Jmp(ref reg, ref val)) => {
                 let value = self.machine.resolve_value(reg);
                 if value > 0 {
                     self.pointer += self.machine.resolve_value(val);
