@@ -6,7 +6,6 @@ pub fn run(_args: &[String]) {
     let maze = Maze::from_map(&input);
     let treasure = maze.find_treasure().iter().collect::<String>();
     println!("Part 1: {}", treasure);
-
     println!("Part 2: {}", maze.iter().count());
 }
 
@@ -61,11 +60,11 @@ impl Cell {
         let delta_y = previous.1 - self.1;
 
         match (delta_x, delta_y) {
-            (0,  1) => Some(Direction::N),
-            (0, -1) => Some(Direction::S),
-            ( 1, 0) => Some(Direction::W),
-            (-1, 0) => Some(Direction::E),
-            _       => None,
+            ( 0,  1) => Some(Direction::N),
+            ( 0, -1) => Some(Direction::S),
+            ( 1,  0) => Some(Direction::W),
+            (-1,  0) => Some(Direction::E),
+            _        => None,
         }
     }
 }
@@ -75,12 +74,12 @@ fn test_cell_neighbors() {
     let cell = Cell(4, -3);
     assert_eq!(cell.north(), Cell(4, -4));
     assert_eq!(cell.south(), Cell(4, -2));
-    assert_eq!(cell.east(), Cell(5, -3));
-    assert_eq!(cell.west(), Cell(3, -3));
+    assert_eq!(cell.east(),  Cell(5, -3));
+    assert_eq!(cell.west(),  Cell(3, -3));
 }
 
 #[test]
-fn test_cell_direction() {
+fn test_cell_direction_from() {
     let cell = Cell(5, 5);
     assert_eq!(cell.direction_from(Cell(4, 5)), Some(Direction::E));
     assert_eq!(cell.direction_from(Cell(6, 5)), Some(Direction::W));
