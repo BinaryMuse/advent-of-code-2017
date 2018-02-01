@@ -6,6 +6,8 @@ pub fn run(_args: &[String]) {
     let maze = Maze::from_map(&input);
     let treasure = maze.find_treasure().iter().collect::<String>();
     println!("Part 1: {}", treasure);
+
+    println!("Part 2: {}", maze.iter().count());
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
