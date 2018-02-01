@@ -90,19 +90,8 @@ fn test_cell_direction_from() {
 #[derive(Debug, PartialEq, Eq)]
 enum RoomType { NS, EW, Corner, Letter(char), Empty }
 
-#[derive(Debug, PartialEq, Eq)]
-struct Room {
-    kind: RoomType,
-}
-
-impl Room {
-    fn new(kind: RoomType) -> Self {
-        Self { kind }
-    }
-}
-
 struct Maze {
-    rooms: HashMap<Cell, Room>,
+    rooms: HashMap<Cell, RoomType>,
 }
 
 impl Maze {
@@ -119,7 +108,7 @@ impl Maze {
                     ' ' => RoomType::Empty,
                     _   => RoomType::Letter(ch),
                 };
-                rooms.insert(cell, Room::new(room));
+                rooms.insert(cell, room);
             }
         }
 
@@ -128,13 +117,13 @@ impl Maze {
 
     fn get_start(&self) -> Option<Cell> {
         let start_pair = self.rooms.iter().find(|&(cell, room)| {
-            room.kind == RoomType::NS && cell.1 == 0
+            *room == RoomType::NS && cell.1 == 0
         });
 
         start_pair.map(|pair| *pair.0)
     }
 
-    fn get_room(&self, cell: &Cell) -> Option<&Room> {
+    fn get_room(&self, cell: &Cell) -> Option<&RoomType> {
         self.rooms.get(cell)
     }
 
@@ -146,7 +135,7 @@ impl Maze {
         let mut treasure = vec![];
         for cell in self.iter() {
             let room = self.get_room(&cell).expect("Expected iter'd room to exist");
-            if let RoomType::Letter(ch) = room.kind {
+            if let &RoomType::Letter(ch) = room {
                 treasure.push(ch);
             }
         }
@@ -170,11 +159,11 @@ impl<'a> MazeIter<'a> {
         use self::RoomType::*;
 
         let room = self.maze.get_room(&cell).expect("No room found for visited cell!");
-        match room.kind {
-            NS | EW | Letter(_) => {
+        match room {
+            &NS | &EW | &Letter(_) => {
                 let next = cell.neighbor(self.direction);
-                if let Some(room) = self.maze.get_room(&next) {
-                    if room.kind == RoomType::Empty {
+                if let Some(next_room) = self.maze.get_room(&next) {
+                    if *next_room == RoomType::Empty {
                         None
                     } else {
                         Some(next)
@@ -183,12 +172,12 @@ impl<'a> MazeIter<'a> {
                     None
                 }
             },
-            Corner => {
+            &Corner => {
                 let candidate_neighbors = vec![cell.north(), cell.south(), cell.east(), cell.west()];
                 let remaining = candidate_neighbors.iter().filter(|&&c| {
                     if let Some(room) = self.maze.get_room(&c) {
                         let previous = cell.neighbor(self.direction.opposite());
-                        c != previous && room.kind != RoomType::Empty
+                        c != previous && *room != RoomType::Empty
                     } else {
                         false
                     }
@@ -196,7 +185,7 @@ impl<'a> MazeIter<'a> {
                 assert!(remaining.len() == 1);
                 Some(*remaining[0])
             },
-            Empty => {
+            &Empty => {
                 panic!("Shouldn't be able to visit Empty room");
             },
         }
