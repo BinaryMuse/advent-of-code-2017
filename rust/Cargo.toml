@@ -5,3 +5,5 @@ authors = ["Michelle Tilley <michelle@michelletilley.net>"]
 
 [dependencies]
 num = "0.1"
+regex = "0.2"
+lazy_static = "1.0"

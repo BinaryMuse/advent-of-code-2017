@@ -1,6 +1,10 @@
 use std::io::Write;
 use std::str::FromStr;
 
+extern crate regex;
+#[macro_use]
+extern crate lazy_static;
+
 mod common;
 mod day01;
 mod day02;
@@ -17,6 +21,7 @@ mod day16;
 mod day17;
 mod day18;
 mod day19;
+mod day20;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -45,6 +50,7 @@ fn main() {
         17 => day17::run,
         18 => day18::run,
         19 => day19::run,
+        20 => day20::run,
         _  => {
             println!("Couldn't find implementation for day {}", day);
             std::process::exit(1);
