@@ -135,7 +135,7 @@ impl Collider {
     }
 
     fn count(&self) -> usize {
-        self.particles.iter().filter(|maybe| maybe.is_some()).count()
+        self.particles.iter().filter(|&maybe| maybe.is_some()).count()
     }
 }
 
