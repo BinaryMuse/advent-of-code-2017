@@ -1,43 +1,45 @@
 use common;
 use coords::Coord;
+use std::borrow::Borrow;
 use std::fmt;
-// use std::str::FromStr;
 
 pub fn run(_args: &[String]) {
     let input = common::get_input("./inputs/21.txt").expect("expected input 21.txt");
     let rulebook = Rulebook::from_str(&input);
+
     {
-        let mut start = PixBuf::from_str(".#./..#/###");
+        // Part 1
+        let mut pixbuf = PixBuf::from_str(".#./..#/###");
         for _i in 0..5 {
-            start = iterate(&start, &rulebook);
+            pixbuf = iterate(&pixbuf, &rulebook);
         }
-        let count = start.pixels.iter().filter(|&p| *p == true).count();
+        let count = pixbuf.pixels.iter().filter(|&p| *p == true).count();
         println!("Part 1: {} live pixels", count);
     }
     {
         // Part 2: run with `--release`
-        let mut start = PixBuf::from_str(".#./..#/###");
+        let mut pixbuf = PixBuf::from_str(".#./..#/###");
         for _i in 0..18 {
-            start = iterate(&start, &rulebook);
+            pixbuf = iterate(&pixbuf, &rulebook);
         }
-        let count = start.pixels.iter().filter(|&p| *p == true).count();
+        let count = pixbuf.pixels.iter().filter(|&p| *p == true).count();
         println!("Part 2: {} live pixels", count);
     }
 }
 
 fn iterate(before: &PixBuf, rules: &Rulebook) -> PixBuf {
     let size = before.size;
+    let parts;
     if size % 2 == 0 {
-        let parts = before.split_into_sized(2);
-        let new_parts = parts.iter().map(|part| rules.get_replacement(part).unwrap().clone()).collect::<Vec<_>>();
-        PixBuf::stitch(&new_parts)
+        parts = before.split_into_sized(2);
     } else if size % 3 == 0 {
-        let parts = before.split_into_sized(3);
-        let new_parts = parts.iter().map(|part| rules.get_replacement(part).unwrap().clone()).collect::<Vec<_>>();
-        PixBuf::stitch(&new_parts)
+        parts = before.split_into_sized(3);
     } else {
-        panic!("Can't get here");
+        panic!("Size divisible by neither 2 nor 3");
     }
+
+    let new_parts = parts.iter().map(|part| rules.get_replacement(part).unwrap()).collect::<Vec<_>>();
+    PixBuf::stitch(&new_parts)
 }
 
 
@@ -71,11 +73,12 @@ impl PixBuf {
         PixBuf { size, pixels }
     }
 
-    fn stitch(pixbufs: &Vec<PixBuf>) -> Self {
+    fn stitch<T>(pixbufs: &Vec<T>) -> Self
+        where T: Borrow<PixBuf> {
         let len = pixbufs.len();
         assert!(len > 0);
-        let size = pixbufs[0].size;
-        assert!(pixbufs.iter().all(|pb| pb.size == size));
+        let size = pixbufs[0].borrow().size;
+        assert!(pixbufs.iter().all(|pb| pb.borrow().size == size));
         let num_bufs_per_row = (len as f64).sqrt() as usize;
 
         let mut buf = PixBuf::with_size(num_bufs_per_row * size);
@@ -85,7 +88,7 @@ impl PixBuf {
                 let start = Coord(x * size, y * size);
                 let idx = y * num_bufs_per_row + x;
                 let copy_from = &pixbufs[idx];
-                buf.copy_from(copy_from, start);
+                buf.copy_from(copy_from.borrow(), start);
             }
         }
 
@@ -250,7 +253,7 @@ fn test_pixbuf_split() {
 
 #[test]
 fn test_pixbuf_stitch() {
-    let pixbufs = vec![".#/#.", "#./.#", "../##", "##/.."].into_iter().map(PixBuf::from_str).collect::<Vec<_>>();
+    let pixbufs = vec![".#/#.", "#./.#", "../##", "##/.."].into_iter().map(PixBuf::from_str).collect();
     assert_eq!(PixBuf::from_str(".##./#..#/..##/##.."), PixBuf::stitch(&pixbufs));
 }
 
