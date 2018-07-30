@@ -4,8 +4,29 @@ use std::fmt;
 // use std::str::FromStr;
 
 pub fn run(_args: &[String]) {
-    let _input = common::get_input("./inputs/21.txt").expect("expected input 21.txt");
-    // let rulebook: HashMap<String, String> = parse_rules(&input);
+    let input = common::get_input("./inputs/21.txt").expect("expected input 21.txt");
+    let rulebook = Rulebook::from_str(&input);
+    let mut start = PixBuf::from_str(".#./..#/###");
+    for _i in 0..5 {
+        start = iterate(&start, &rulebook);
+    }
+    let count = start.pixels.iter().filter(|&p| *p == true).count();
+    println!("Part 1: {} live pixels", count);
+}
+
+fn iterate(before: &PixBuf, rules: &Rulebook) -> PixBuf {
+    let size = before.size;
+    if size % 2 == 0 {
+        let parts = before.split_into_sized(2);
+        let new_parts = parts.iter().map(|part| rules.get_replacement(part).unwrap().clone()).collect::<Vec<_>>();
+        PixBuf::stitch(&new_parts)
+    } else if size % 3 == 0 {
+        let parts = before.split_into_sized(3);
+        let new_parts = parts.iter().map(|part| rules.get_replacement(part).unwrap().clone()).collect::<Vec<_>>();
+        PixBuf::stitch(&new_parts)
+    } else {
+        panic!("Can't get here");
+    }
 }
 
 
@@ -45,12 +66,11 @@ impl PixBuf {
         let size = pixbufs[0].size;
         assert!(pixbufs.iter().all(|pb| pb.size == size));
         let num_bufs_per_row = (len as f64).sqrt() as usize;
-        let size_total = num_bufs_per_row * size;
 
-        let mut buf = PixBuf::with_size(size_total);
+        let mut buf = PixBuf::with_size(num_bufs_per_row * size);
 
-        for y in 0..size {
-            for x in 0..size {
+        for y in 0..num_bufs_per_row {
+            for x in 0..num_bufs_per_row {
                 let start = Coord(x * size, y * size);
                 let idx = y * num_bufs_per_row + x;
                 let copy_from = &pixbufs[idx];
@@ -235,7 +255,7 @@ impl Rule {
         let parts = string.split(" => ").collect::<Vec<_>>();
         let pattern = PixBuf::from_str(parts[0]);
         let replacement = PixBuf::from_str(parts[1]);
-        Rule { pattern, replacement }
+        Rule::new(pattern, replacement)
     }
 
     fn new(pattern: PixBuf, replacement: PixBuf) -> Self {
