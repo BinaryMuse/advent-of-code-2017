@@ -6,12 +6,23 @@ use std::fmt;
 pub fn run(_args: &[String]) {
     let input = common::get_input("./inputs/21.txt").expect("expected input 21.txt");
     let rulebook = Rulebook::from_str(&input);
-    let mut start = PixBuf::from_str(".#./..#/###");
-    for _i in 0..5 {
-        start = iterate(&start, &rulebook);
+    {
+        let mut start = PixBuf::from_str(".#./..#/###");
+        for _i in 0..5 {
+            start = iterate(&start, &rulebook);
+        }
+        let count = start.pixels.iter().filter(|&p| *p == true).count();
+        println!("Part 1: {} live pixels", count);
     }
-    let count = start.pixels.iter().filter(|&p| *p == true).count();
-    println!("Part 1: {} live pixels", count);
+    {
+        // Part 2: run with `--release`
+        let mut start = PixBuf::from_str(".#./..#/###");
+        for _i in 0..18 {
+            start = iterate(&start, &rulebook);
+        }
+        let count = start.pixels.iter().filter(|&p| *p == true).count();
+        println!("Part 2: {} live pixels", count);
+    }
 }
 
 fn iterate(before: &PixBuf, rules: &Rulebook) -> PixBuf {
