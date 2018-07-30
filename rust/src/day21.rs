@@ -1,6 +1,5 @@
 use common;
 use coords::Coord;
-use std::borrow::Borrow;
 use std::fmt;
 
 pub fn run(_args: &[String]) {
@@ -73,12 +72,11 @@ impl PixBuf {
         PixBuf { size, pixels }
     }
 
-    fn stitch<T>(pixbufs: &Vec<T>) -> Self
-        where T: Borrow<PixBuf> {
+    fn stitch(pixbufs: &Vec<&PixBuf>) -> Self {
         let len = pixbufs.len();
         assert!(len > 0);
-        let size = pixbufs[0].borrow().size;
-        assert!(pixbufs.iter().all(|pb| pb.borrow().size == size));
+        let size = pixbufs[0].size;
+        assert!(pixbufs.iter().all(|pb| pb.size == size));
         let num_bufs_per_row = (len as f64).sqrt() as usize;
 
         let mut buf = PixBuf::with_size(num_bufs_per_row * size);
@@ -88,7 +86,7 @@ impl PixBuf {
                 let start = Coord(x * size, y * size);
                 let idx = y * num_bufs_per_row + x;
                 let copy_from = &pixbufs[idx];
-                buf.copy_from(copy_from.borrow(), start);
+                buf.copy_from(copy_from, start);
             }
         }
 
@@ -253,7 +251,11 @@ fn test_pixbuf_split() {
 
 #[test]
 fn test_pixbuf_stitch() {
-    let pixbufs = vec![".#/#.", "#./.#", "../##", "##/.."].into_iter().map(PixBuf::from_str).collect();
+    let pb1 = PixBuf::from_str(".#/#.");
+    let pb2 = PixBuf::from_str("#./.#");
+    let pb3 = PixBuf::from_str("../##");
+    let pb4 = PixBuf::from_str("##/..");
+    let pixbufs = vec![&pb1, &pb2, &pb3, &pb4];
     assert_eq!(PixBuf::from_str(".##./#..#/..##/##.."), PixBuf::stitch(&pixbufs));
 }
 
